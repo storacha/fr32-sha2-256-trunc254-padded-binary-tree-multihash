@@ -141,7 +141,7 @@ impl Hasher for PieceHasher {
 }
 
 fn read_quad(source: &QuadBuffer, output: &mut Layer) {
-    let mut buffer = vec![0u8; OUT_BYTES_PER_QUAD];
+    let mut buffer = [0u8; OUT_BYTES_PER_QUAD];
     let mut offset = 0;
 
     // First 31 bytes + 6 bits are taken as-is (trimmed later)
@@ -176,16 +176,6 @@ fn read_quad(source: &QuadBuffer, output: &mut Layer) {
     output.push(MerkleTreeNode::from(truncated_hash(
         &buffer[NODE_SIZE * 2..],
     )));
-    // output.push(MerkleTreeNode(buffer[0..NODE_SIZE].try_into().unwrap()));
-    // output.push(MerkleTreeNode(
-    //     buffer[NODE_SIZE..NODE_SIZE * 2].try_into().unwrap(),
-    // ));
-    // output.push(MerkleTreeNode(
-    //     buffer[NODE_SIZE * 2..NODE_SIZE * 3].try_into().unwrap(),
-    // ));
-    // output.push(MerkleTreeNode(
-    //     buffer[NODE_SIZE * 3..NODE_SIZE * 4].try_into().unwrap(),
-    // ));
 }
 
 /**

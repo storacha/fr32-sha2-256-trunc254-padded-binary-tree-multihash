@@ -1,8 +1,5 @@
 use crate::constant::NODE_SIZE;
-// use sha2::{Digest, Sha256};
-extern crate crypto;
-
-use crypto::{digest::Digest, sha2::Sha256};
+use sha2::{Digest, Sha256};
 
 /**
  * Represents merkle tree node.
@@ -42,15 +39,10 @@ pub struct Piece {
 // Function to compute the truncated hash of a payload
 pub fn truncated_hash(payload: &[u8]) -> [u8; NODE_SIZE] {
     let mut sha256 = Sha256::new();
-    sha256.input(payload);
-    // sha256.update(payload);
-    // let digest = &mut sha256.finalize().into();
-    let mut digest = [0u8; NODE_SIZE];
-    sha256.result(&mut digest);
-
+    sha256.update(payload);
+    let mut digest = sha256.finalize().into();
     truncate(&mut digest);
-
-    digest.to_owned()
+    digest
 }
 
 // Function to compute a Merkle tree node from left and right nodes
@@ -67,6 +59,7 @@ pub fn empty_node() -> MerkleTreeNode {
 }
 
 // Function to truncate a Merkle tree node
+#[inline]
 pub fn truncate(node: &mut [u8; NODE_SIZE]) {
     node[NODE_SIZE - 1] &= 0b00111111;
 }

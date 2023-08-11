@@ -42,13 +42,6 @@ pub fn pad(source: &[u8], output: &mut [u8]) -> Result<usize, ()> {
         let read_offset = (n * IN_BYTES_PER_QUAD) as usize;
         let write_offset = (n * OUT_BYTES_PER_QUAD) as usize;
 
-        println!(
-            "read_offset={:?} write_offset={:?}",
-            read_offset, write_offset
-        );
-
-        println!("slice={:?}", &source[read_offset..read_offset + 32]);
-
         // First 31 bytes + 6 bits are taken as-is (trimmed later)
         output[write_offset..write_offset + 32]
             .copy_from_slice(&source[read_offset..read_offset + 32]);

@@ -28,7 +28,6 @@ wee_alloc = { version = "0.4.5", optional = true }
 web-sys = { version = "0.3.61", features = ["console", "TransformStream", "ReadableStream", "WritableStream", "WritableStreamDefaultWriter", "ReadableStreamDefaultReader"] }
 js-sys = "0.3.61"
 sha2 = "0.9.3"
-rust-crypto-wasm = "^0.3"
 lazy_static = "1.4.0"
 wasm-streams = "0.3.0"
 futures-util = "0.3.28"

@@ -1,5 +1,4 @@
 use crate::constant::NODE_SIZE;
-use std::convert::TryFrom;
 
 const BYTES_PER_NODE: u64 = NODE_SIZE as u64;
 

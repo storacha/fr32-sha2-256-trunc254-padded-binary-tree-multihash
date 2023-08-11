@@ -1,6 +1,5 @@
 use wasm_bindgen::prelude::*;
 pub mod constant;
-pub mod fr32;
 mod hasher;
 pub mod tree;
 mod util;
@@ -8,7 +7,7 @@ mod zero_comm;
 
 use hasher::{Hasher, PieceHasher, MULTIHASH_SIZE};
 
-// When the `wee_olloc` feature is enabled, use `wee_alloc` as the global
+// When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
@@ -33,12 +32,12 @@ impl PieceHasher {
     /// Resets the hasher state
     #[wasm_bindgen]
     pub fn reset(&self) {
-        self.reset();
+        PieceHasher::reset(&self);
     }
 
     #[wasm_bindgen]
     pub fn write(&mut self, bytes: &[u8]) {
-        &self.update(bytes);
+        PieceHasher::update(self, bytes);
     }
 
     #[wasm_bindgen(js_name = digestInto)]
@@ -74,7 +73,7 @@ mod tests {
     #[test]
     fn test_lib() {
         let mut hasher = create();
-        let data = vec![0u8; 65];
+        let data = [0u8; 65];
         hasher.write(&data);
 
         let mut out = [0u8; 36];
