@@ -72,32 +72,6 @@ export function create() {
     return PieceHasher.__wrap(ret);
 }
 
-function _assertClass(instance, klass) {
-    if (!(instance instanceof klass)) {
-        throw new Error(`expected instance of ${klass.name}`);
-    }
-    return instance.ptr;
-}
-/**
-* @param {PieceHasher} hasher
-*/
-export function reset(hasher) {
-    _assertClass(hasher, PieceHasher);
-    wasm.reset(hasher.__wbg_ptr);
-}
-
-/**
-* @param {PieceHasher} hasher
-* @param {Uint8Array} target
-* @param {number} offset
-*/
-export function readHashInto(hasher, target, offset) {
-    _assertClass(hasher, PieceHasher);
-    var ptr0 = passArray8ToWasm0(target, wasm.__wbindgen_malloc);
-    var len0 = WASM_VECTOR_LEN;
-    wasm.readHashInto(hasher.__wbg_ptr, ptr0, len0, addHeapObject(target), offset);
-}
-
 /**
 */
 export class PieceHasher {

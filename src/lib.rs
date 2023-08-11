@@ -56,16 +56,6 @@ pub fn create() -> PieceMultihasher {
     PieceHasher::default()
 }
 
-#[wasm_bindgen]
-pub fn reset(hasher: &mut PieceHasher) {
-    hasher.reset();
-}
-
-#[wasm_bindgen(js_name = readHashInto)]
-pub fn read_hash_into(hasher: &mut PieceHasher, target: &mut [u8], offset: usize) {
-    target[offset..].copy_from_slice(&hasher.finalize());
-}
-
 #[cfg(test)]
 mod tests {
     use crate::create;
