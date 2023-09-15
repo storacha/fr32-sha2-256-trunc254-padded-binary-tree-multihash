@@ -1,58 +1,73 @@
 use crate::constant::NODE_SIZE;
 use crate::tree::MerkleTreeNode;
+use js_sys::Uint8Array;
 use std::future::Future;
-use wasm_streams::transform;
-use web_sys::TransformStream;
+use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsValue;
+use wasm_bindgen_futures::JsFuture;
+use web_sys::{Crypto, SubtleCrypto};
 
 type Node = [u8; NODE_SIZE];
 
-pub fn setup() {
-    let pipe = TransformStream::new();
+pub fn crypto() -> Crypto {
+    use wasm_bindgen::JsCast;
+
+    let object = js_sys::Reflect::get(&js_sys::global().into(), &"crypto".into()).expect("crypto");
+
+    web_sys::Crypto::from(object)
 }
 
-pub fn open() -> transform::TransformStream {
-    let raw = transform::sys::TransformStream::new();
-    transform::TransformStream::from_raw(raw)
+#[wasm_bindgen(module = "/src/sha256.js")]
+extern "C" {
+    fn sha256_into(payload: &[u8], dst: &mut [u8]) -> js_sys::Promise;
+}
+
+#[wasm_bindgen]
+pub async fn sha256(data: &[u8], dst: &mut [u8]) {
+    let promise = sha256_into(data, dst);
+    // let promise = crypto()
+    //     .subtle()
+    //     .digest_with_str_and_u8_array("SHA-256", data)
+    //     .expect("Get digest");
+
+    JsFuture::from(promise).await.expect("resolve promise");
 }
 
 #[cfg(test)]
 mod tests {
+
+    use crate::hasher_async::sha256;
     use wasm_bindgen_test::*;
-    use web_sys::{ReadableStreamDefaultReader, TransformStream, WritableStreamDefaultWriter};
+
     wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
-    use crate::sync::open;
-    use futures_util::io::AsyncWriteExt;
-    use futures_util::stream::StreamExt;
-    use wasm_bindgen::prelude::*;
-    use wasm_streams::transform;
 
-    // #[wasm_bindgen_test]
-    // async fn test_transform_stream() {
-    //     let pipe = TransformStream::new().expect("Get transform stream");
-
-    //     let writable = pipe.writable();
-    //     let readable = pipe.readable();
-
-    //     let mut writer = WritableStreamDefaultWriter::new(&writable).expect("Get writer");
-    //     let mut reader = ReadableStreamDefaultReader::new(&readable);
-
-    //     writer.write_with_chunk(&vec![0, 1]);
-    // }
     #[wasm_bindgen_test]
-    async fn test_streams() {
-        let channel = open();
-        let writer = &mut channel.writable().into_async_write();
+    async fn test_sha256() {
+        let mut digest = [0u8; 32];
+        let _digest = sha256(&mut [0u8; 64], &mut digest).await;
 
-        let readable = channel.readable();
-        let reader = readable.into_async_read();
-
-        writer.write(&[0, 1, 2]);
-
-        // let out = reader.take(1).next().await;
-        // let r = out.unwrap().unwrap();
-
-        // assert_eq!(r, JsValue::from(&[0, 1, 2].as_ref()));
+        assert_eq!(
+            digest,
+            [
+                245, 165, 253, 66, 209, 106, 32, 48, 39, 152, 239, 110, 211, 9, 151, 155, 67, 0,
+                61, 35, 32, 217, 240, 232, 234, 152, 49, 169, 39, 89, 251, 75
+            ]
+        )
     }
+    // #[wasm_bindgen_test]
+    // async fn test_crypto() {
+    //     use wasm_bindgen::JsCast;
+    //     print!("------------ start ------------");
+    //     let global = js_sys::global();
+    //     let g = js_sys::Reflect::get(&global, &"crypto".into()).expect("got crypto field");
+
+    //     assert!(g.is_undefined());
+
+    //     let c = js_sys::eval(&"globalThis").expect("access crypto field");
+    //     assert!(c.is_truthy());
+
+    //     let crypto = web_sys::Crypto::from(c);
+    // }
 }
 
 // struct Channel {

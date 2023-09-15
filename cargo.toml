@@ -8,7 +8,7 @@ edition = "2018"
 crate-type = ["cdylib", "rlib"]
 
 [features]
-default = ["console_error_panic_hook"]
+default = ["console_error_panic_hook", "wee_alloc"]
 
 [dependencies]
 wasm-bindgen = "0.2.84"
@@ -25,12 +25,12 @@ console_error_panic_hook = { version = "0.1.6", optional = true }
 #
 # Unfortunately, `wee_alloc` requires nightly Rust when targeting wasm for now.
 wee_alloc = { version = "0.4.5", optional = true }
-web-sys = { version = "0.3.61", features = ["console", "TransformStream", "ReadableStream", "WritableStream", "WritableStreamDefaultWriter", "ReadableStreamDefaultReader"] }
+web-sys = { version = "0.3.61", features = ["console", "Window", "Crypto", "SubtleCrypto"] }
 js-sys = "0.3.61"
 sha2 = "0.9.3"
 lazy_static = "1.4.0"
-wasm-streams = "0.3.0"
 futures-util = "0.3.28"
+wasm-bindgen-futures="0.4.27"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.13"
