@@ -11,18 +11,18 @@ const main = async () => {
 
   // await moveFile("./gen/wasm_bg.wasm", "./gen/bytecode.wasm")
 
-  // console.log("Encode wasm bytecode as js module")
-  // const bytecode = await readFile("./gen/bytecode.wasm")
+  console.log("Encode wasm bytecode as js module")
+  const bytecode = await readFile("./gen/wasm_bg.wasm")
 
   // await writeFile(
-  //   "./gen/bytecode.js",
+  //   "./gen/wasm_bg.js",
   //   Buffer.from(`export default new Uint8Array([${bytecode.join(",")}])`)
   // )
 
-  // await writeFile(
-  //   "./gen/bytecode.base64.js",
-  //   base64.base64.baseEncode(bytecode)
-  // )
+  await writeFile(
+    "./gen/wasm_bg.js",
+    `export default '${base64.base64.baseEncode(bytecode)}'`
+  )
 
   console.log("Edit wasm.js")
 

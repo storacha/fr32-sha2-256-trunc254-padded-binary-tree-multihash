@@ -2,7 +2,19 @@ import type {
   MultihashDigest,
   MultihashHasher,
   SyncMultihashHasher,
+  Phantom,
 } from "multiformats"
+
+/**
+ * [Multicodec code] usually used to tag [multiformat].
+ *
+ * [multiformat]:https://multiformats.io/
+ * [multicodec code]:https://github.com/multiformats/multicodec/blob/master/table.csv
+ */
+export type MulticodecCode<
+  Code extends number = number,
+  Name extends string = string
+> = Code & Phantom<Name>
 
 export interface Digest<Code extends number, Size extends number>
   extends MultihashDigest<Code> {
