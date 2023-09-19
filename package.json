@@ -14,6 +14,7 @@
     "gen": "node scripts/build.js",
     "check": "tsc --build",
     "build": "tsc --build",
+    "prepublishOnly": "tsc --build",
     "test:web": "playwright-test test/**/*.spec.js --runner entail --cov && nyc report",
     "test:node": "c8 --check-coverage --branches 100 --functions 100 --lines 100 entail test/**/*.spec.js",
     "test": "c8 --check-coverage --branches 0 --functions 0 --lines 0 entail test/**/*.spec.js",
