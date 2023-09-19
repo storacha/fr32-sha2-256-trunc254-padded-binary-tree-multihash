@@ -34,6 +34,7 @@ const main = async () => {
     // )
 
     return Buffer.concat([
+      Buffer.from(`// @ts-nocheck\n`),
       Buffer.from(code),
       await readFile("./template/wasm.js"),
     ])
@@ -93,6 +94,13 @@ const deleteFile = path => FS.rm(new URL(path, baseURL))
  */
 const moveFile = (from, to) =>
   FS.rename(new URL(from, baseURL), new URL(to, baseURL))
+
+/**
+ * @param {string} from
+ * @param {string} to
+ */
+const copyFile = (from, to) =>
+  FS.copyFile(new URL(from, baseURL), new URL(to, baseURL))
 
 const build = async () => {
   execSync("wasm-pack build")

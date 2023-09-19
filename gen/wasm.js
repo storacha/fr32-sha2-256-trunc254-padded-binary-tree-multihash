@@ -1,3 +1,4 @@
+// @ts-nocheck
 let wasm;
 
 let cachedUint8Memory0 = null;
