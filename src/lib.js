@@ -1,4 +1,3 @@
-// import { hashInto } from "../gen/wasm.js"
 import load, { create } from "../gen/wasm.js"
 import * as API from "./type.js"
 export * from "./type.js"
@@ -26,5 +25,10 @@ export const code = 0x1011
  * @type {33}
  */
 export const size = 33
+
+/**
+ * Multihash prefix encoding the multihash code and digest size.
+ */
+export const prefix = new Uint8Array([145, 32, 33])
 
 export { create }
