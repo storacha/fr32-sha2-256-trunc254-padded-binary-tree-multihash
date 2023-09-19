@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.4](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/compare/v1.1.3...v1.1.4) (2023-09-19)
+
+
+### Bug Fixes
+
+* release flow ([36ac05d](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/commit/36ac05d19054ec9a9eaa863de460f576223749ac))
+* release flow ([#10](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/issues/10)) ([0a2b12e](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/commit/0a2b12e8a64056e5b1b8a1ffac4ed0b3eb5caee7))
+
 ## [1.1.3](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/compare/v1.1.2...v1.1.3) (2023-09-19)
 
 
