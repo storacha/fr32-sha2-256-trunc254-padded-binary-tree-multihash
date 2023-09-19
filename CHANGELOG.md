@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/compare/v1.1.0...v1.1.1) (2023-09-19)
+
+
+### Miscellaneous Chores
+
+* release 1.1.1 ([85a769d](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/commit/85a769d6991e7a95628d85ab7e19883da60a49ce))
+
 ## [1.1.0](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/compare/v1.0.0...v1.1.0) (2023-09-19)
 
 
