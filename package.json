@@ -1,6 +1,6 @@
 {
   "name": "fr32-sha2-256-trunc254-padded-binary-tree-multihash",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Fil Piece multihash",
   "keywords": [
     "piece",
