@@ -262,4 +262,12 @@ mod tests {
             ]
         )
     }
+    #[test]
+    #[should_panic(expected = "Algorithm is not defined for payloads smaller than 65 bytes")]
+    fn test_too_few() {
+        let mut hasher = PieceHasher::new();
+        let data = vec![0u8; 64];
+        hasher.update(&data);
+        hasher.finalize();
+    }
 }
