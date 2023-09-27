@@ -21,4 +21,13 @@ export const testLib = {
       ])
     )
   },
+  'throws if payload as less than minimum allowed': async (assert) => {
+    const hasher = Hasher.create()
+    const bytes = new Uint8Array(64).fill(0)
+    hasher.write(bytes)
+    const error = assert.throws(
+      () => hasher.digestInto(new Uint8Array(36), 0, true)
+    )
+    assert.match(error.message, /not defined for payloads smaller than 65 bytes/)
+  },
 }
