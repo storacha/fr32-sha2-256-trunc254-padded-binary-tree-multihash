@@ -53,6 +53,7 @@ impl PieceHasher {
 
 #[wasm_bindgen]
 pub fn create() -> PieceMultihasher {
+    util::set_panic_hook();
     PieceHasher::default()
 }
 
