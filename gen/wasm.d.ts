@@ -28,8 +28,9 @@ export class PieceHasher {
 * @param {Uint8Array} target
 * @param {number | undefined} offset
 * @param {boolean | undefined} use_prefix
+* @returns {number}
 */
-  digestInto(target: Uint8Array, offset?: number, use_prefix?: boolean): void;
+  digestInto(target: Uint8Array, offset?: number, use_prefix?: boolean): number;
 }
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
@@ -40,7 +41,7 @@ export interface InitOutput {
   readonly piecehasher_count: (a: number) => number;
   readonly piecehasher_reset: (a: number) => void;
   readonly piecehasher_write: (a: number, b: number, c: number) => void;
-  readonly piecehasher_digestInto: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => void;
+  readonly piecehasher_digestInto: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => number;
   readonly create: () => number;
   readonly piecehasher_create: () => number;
   readonly __wbindgen_malloc: (a: number, b: number) => number;

@@ -25,17 +25,6 @@ impl From<[u8; NODE_SIZE]> for MerkleTreeNode {
     }
 }
 
-pub struct Piece {
-    /**
-     * Root node of this Merkle tree.
-     */
-    root: MerkleTreeNode,
-    /**
-     * Height of the tree.
-     */
-    height: usize,
-}
-
 // Function to compute the truncated hash of a payload
 pub fn truncated_hash(payload: &[u8]) -> [u8; NODE_SIZE] {
     let mut sha256 = Sha256::new();
