@@ -17,7 +17,7 @@ export const testLib = {
       new Uint8Array([
         145,
         32, // prefix
-        33, // length
+        34, // length
         62, // padding
         2, // height
         55,
