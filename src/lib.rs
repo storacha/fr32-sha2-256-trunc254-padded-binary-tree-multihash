@@ -184,6 +184,7 @@ mod tests {
 
         let multihash = hasher.multihash();
 
+        assert_eq!(multihash.size(), 34);
         assert_eq!(
             multihash.digest(),
             [
@@ -273,6 +274,8 @@ mod tests {
         payload[127 * 4..].fill(0);
 
         let hash = PieceHasher::from(&payload).multihash();
+
+        assert_eq!(hash.size(), 35);
         assert_eq!(
             hash.digest(),
             [
@@ -310,6 +313,7 @@ mod tests {
 
         let hash = PieceHasher::from(&payload[..]).multihash();
 
+        assert_eq!(hash.size(), 35);
         assert_eq!(
             hash.digest(),
             [
@@ -324,5 +328,22 @@ mod tests {
             PieceHasher::from(&payload[..]).link().to_string(),
             "bafkzcibd64bqlxticxolgseegik2stpfgkkuwyf6kufex3doorkvmzpjuxwe4dz4"
         )
+    }
+
+    #[test]
+    fn test_js_case() {
+        let mut hasher = PieceHasher::from(&[0u8; 65]);
+        let hash = hasher.multihash();
+
+        assert_eq!(hash.size(), 34);
+        assert_eq!(
+            hash.digest(),
+            [
+                62, // padding
+                2,  // height
+                55, 49, 187, 153, 172, 104, 159, 102, 238, 245, 151, 62, 74, 148, 218, 24, 143, 77,
+                220, 174, 88, 7, 36, 252, 111, 63, 214, 13, 253, 72, 131, 51,
+            ]
+        );
     }
 }
