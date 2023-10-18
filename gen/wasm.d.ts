@@ -37,13 +37,13 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
-  readonly __wbg_piecehasher_free: (a: number) => void;
   readonly piecehasher_count: (a: number) => number;
   readonly piecehasher_reset: (a: number) => void;
   readonly piecehasher_write: (a: number, b: number, c: number) => void;
   readonly piecehasher_digestInto: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => number;
   readonly create: () => number;
   readonly piecehasher_create: () => number;
+  readonly __wbg_piecehasher_free: (a: number) => void;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
 }
 

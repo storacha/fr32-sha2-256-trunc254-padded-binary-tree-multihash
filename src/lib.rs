@@ -15,8 +15,6 @@ pub mod multihash;
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-const PREFIX: [u8; 3] = [145, 32, 33]; // Replace with actual values
-
 type PieceMultihasher = PieceHasher;
 
 #[wasm_bindgen]
@@ -49,15 +47,17 @@ impl PieceHasher {
         offset: Option<usize>,
         use_prefix: Option<bool>,
     ) -> usize {
-        let mut byte_offset = offset.unwrap_or(0);
+        let hash = self.multihash();
+        let byte_offset = offset.unwrap_or(0);
         if use_prefix.unwrap_or(true) {
-            target[byte_offset..byte_offset + PREFIX.len()].copy_from_slice(&PREFIX);
-            byte_offset += PREFIX.len();
+            let bytes = hash.to_bytes();
+            target[byte_offset..byte_offset + bytes.len()].copy_from_slice(&bytes);
+            byte_offset + bytes.len()
+        } else {
+            let bytes = hash.digest();
+            target[byte_offset..byte_offset + bytes.len()].copy_from_slice(&bytes);
+            byte_offset + bytes.len()
         }
-
-        let digest = self.finalize();
-        target[byte_offset..][..digest.len()].copy_from_slice(&digest);
-        byte_offset + digest.len()
     }
 }
 
@@ -98,15 +98,6 @@ mod tests {
 
         assert_eq!(hash.code(), 0x1011);
         assert_eq!(hash.size(), 34);
-        // assert_eq!(
-        //     hash.digest(),
-        //     [
-        //         116, // padding
-        //         2,   // height
-        //         238, 92, 7, 180, 234, 22, 30, 141, 197, 167, 172, 31, 41, 32, 79, 133, 195, 152,
-        //         34, 63, 177, 178, 57, 167, 194, 172, 113, 109, 37, 125, 69, 26
-        //     ]
-        // )
     }
 
     #[test]
