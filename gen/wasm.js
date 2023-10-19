@@ -128,11 +128,13 @@ export class PieceHasher {
     * @param {Uint8Array} target
     * @param {number | undefined} offset
     * @param {boolean | undefined} use_prefix
+    * @returns {number}
     */
     digestInto(target, offset, use_prefix) {
         var ptr0 = passArray8ToWasm0(target, wasm.__wbindgen_malloc);
         var len0 = WASM_VECTOR_LEN;
-        wasm.piecehasher_digestInto(this.__wbg_ptr, ptr0, len0, addHeapObject(target), !isLikeNone(offset), isLikeNone(offset) ? 0 : offset, isLikeNone(use_prefix) ? 0xFFFFFF : use_prefix ? 1 : 0);
+        const ret = wasm.piecehasher_digestInto(this.__wbg_ptr, ptr0, len0, addHeapObject(target), !isLikeNone(offset), isLikeNone(offset) ? 0 : offset, isLikeNone(use_prefix) ? 0xFFFFFF : use_prefix ? 1 : 0);
+        return ret >>> 0;
     }
 }
 

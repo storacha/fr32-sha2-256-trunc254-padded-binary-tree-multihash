@@ -1,14 +1,25 @@
 use crate::constant::{IN_BITS_FR, IN_BYTES_PER_QUAD, NODE_SIZE, OUT_BITS_FR, OUT_BYTES_PER_QUAD};
+use crate::piece::Piece;
 use crate::tree::{compute_node, truncated_hash, MerkleTreeNode};
-use crate::util::from_height;
+use crate::util::{from_height, required_zero_padding};
 use crate::zero_comm;
-use std::convert::TryInto;
+use cid;
+use core::primitive::u64;
+use multihash::Multihash;
+use multihash_derive::Hasher;
+use std::convert::{TryFrom, TryInto};
+use unsigned_varint;
 use wasm_bindgen::prelude::*;
 
 // Fits for 32PiB of data
 const MAX_HEIGHT: u8 = 50; //u8::MAX;
 
-pub const MULTIHASH_SIZE: usize = 33;
+const MAX_PADDING_SIZE: usize = 10; // Max amount of bytes allowed for varint
+const HEIGHT_SIZE: usize = 1; // Height is stored in a single byte
+
+const RAW: usize = 0x55;
+
+pub const MAX_MULTIHASH_SIZE: usize = HEIGHT_SIZE + MAX_PADDING_SIZE + NODE_SIZE;
 type Layer = Vec<MerkleTreeNode>;
 type Layers = Vec<Layer>;
 type QuadBuffer = [u8; IN_BYTES_PER_QUAD];
@@ -21,25 +32,6 @@ type QuadBuffer = [u8; IN_BYTES_PER_QUAD];
 pub const MAX_PAYLOAD_SIZE: u64 =
     from_height(MAX_HEIGHT as u32) * IN_BITS_FR as u64 / OUT_BITS_FR as u64;
 
-/**
- * The smallest amount of data for which FR32 padding has a defined result.
- * Silently upgrading 2 leaves to 4 would break the symmetry so we require
- * an extra byte and the rest can be 0 padded to expand to 4 leaves.
- */
-pub const MIN_PAYLOAD_SIZE: u64 = (2 * NODE_SIZE + 1) as u64;
-
-// @see https://github.com/multiformats/rust-multihash/blob/452a933396adcd5915c53563d5017df76ae3ec26/derive/src/hasher.rs
-pub trait Hasher {
-    /// Consume input and update internal state.
-    fn update(&mut self, input: &[u8]);
-
-    /// Returns the final digest.
-    fn finalize(&mut self) -> &[u8];
-
-    /// Reset the internal hasher state.
-    fn reset(&mut self);
-}
-
 #[wasm_bindgen]
 pub struct PieceHasher {
     pub(crate) bytes_written: u64,
@@ -47,27 +39,83 @@ pub struct PieceHasher {
     offset: usize,
     layers: Layers,
 
-    digest: [u8; MULTIHASH_SIZE],
+    digest: [u8; MAX_MULTIHASH_SIZE],
 }
 
 impl PieceHasher {
     pub fn new() -> Self {
-        PieceHasher::default()
-    }
-}
-
-impl Default for PieceHasher {
-    fn default() -> Self {
         PieceHasher {
             bytes_written: 0,
             buffer: [0; IN_BYTES_PER_QUAD],
             offset: 0,
             layers: vec![Vec::new()],
-            digest: [0; MULTIHASH_SIZE],
+            digest: [0; MAX_MULTIHASH_SIZE],
         }
+    }
+
+    pub fn multihash(&mut self) -> Multihash {
+        let bytes = self.finalize();
+        Multihash::wrap(0x1011, bytes).unwrap()
+    }
+
+    pub fn link(&mut self) -> cid::Cid {
+        cid::Cid::new_v1(RAW as u64, self.multihash())
     }
 }
 
+// Implement default constructor for the PieceHasher
+impl Default for PieceHasher {
+    fn default() -> Self {
+        PieceHasher::new()
+    }
+}
+
+// Implement conversion from Piece reference to PieceHasher that
+// contains that piece. Next updates will end up in the sibling of
+// the piece.
+impl From<&Piece> for PieceHasher {
+    fn from(piece: &Piece) -> Self {
+        let mut hasher = PieceHasher::default();
+        // All but the last layer will be empty as they will be
+        // collapsed into the the root node.
+        let top = piece.height() - 1;
+        for _ in 0..top {
+            hasher.layers.push(vec![]);
+        }
+        // Finally top layer will have only our piece root
+        hasher.layers[top] = vec![piece.root()];
+
+        // Bytes written will correspond to the sum of original payload size
+        // and applied 0-padding. Note that we have to account for padding
+        // given that we don't know internal piece subtrees without which we
+        // are not able to continue hashing from with-in the piece boundaries.
+        hasher.bytes_written = piece.payload_size() + piece.padding_size();
+
+        hasher
+    }
+}
+
+// Implement conversion from the byte array to the PieceHasher
+impl<const N: usize> From<&[u8; N]> for PieceHasher {
+    fn from(bytes: &[u8; N]) -> Self {
+        let mut hasher = PieceHasher::new();
+        hasher.update(bytes);
+        hasher
+    }
+}
+
+// Implements conversion from the byte array slice to the PieceHasher
+// Note that above does not cover this nor this covers the above.
+impl From<&[u8]> for PieceHasher {
+    fn from(bytes: &[u8]) -> Self {
+        let mut hasher = PieceHasher::new();
+        hasher.update(bytes);
+        hasher
+    }
+}
+
+// Implement Hasher trait defined by the multihash crate for the PieceHasher
+// so that it could be use by multihash codec table.
 impl Hasher for PieceHasher {
     fn update(&mut self, bytes: &[u8]) {
         let leaves = &mut self.layers[0];
@@ -110,14 +158,7 @@ impl Hasher for PieceHasher {
         let mut layers = self.layers.clone();
         let leaves = &mut layers[0];
 
-        if self.bytes_written < MIN_PAYLOAD_SIZE {
-            panic!(
-                "Algorithm is not defined for payloads smaller than {} bytes",
-                MIN_PAYLOAD_SIZE
-            )
-        }
-
-        if self.offset > 0 {
+        if self.offset > 0 || self.bytes_written == 0 {
             self.buffer[self.offset..].fill(0);
             read_quad(&self.buffer, leaves);
         }
@@ -127,10 +168,21 @@ impl Hasher for PieceHasher {
         let height = layers.len();
         let root = layers[height - 1][0];
 
-        self.digest[0] = height as u8;
-        self.digest[1..].copy_from_slice(&root.0);
+        // encode padding
+        let mut padding_bytes = unsigned_varint::encode::u64_buffer();
+        let padding = unsigned_varint::encode::u64(
+            required_zero_padding(self.bytes_written),
+            &mut padding_bytes,
+        );
+        self.digest[0..padding.len()].copy_from_slice(&padding);
 
-        return &self.digest;
+        // set the tree height
+        self.digest[padding.len()] = height as u8;
+
+        // copy the root hash
+        self.digest[padding.len() + 1..][..NODE_SIZE].copy_from_slice(&root.0);
+
+        return &self.digest[..padding.len() + 1 + NODE_SIZE];
     }
     fn reset(&mut self) {
         self.offset = 0;
@@ -235,31 +287,5 @@ fn flush(layers: &mut Layers, build: bool) {
 
         layers[level].splice(0..index, []);
         level += 1; // Increment the level
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use hex::ToHex;
-
-    use crate::hasher::{Hasher, PieceHasher};
-    #[test]
-    fn test_basic() {
-        let mut hasher = PieceHasher::new();
-        let data = vec![0u8; 65];
-        hasher.update(&data);
-        let digest = hasher.finalize();
-
-        assert_eq!(
-            digest.encode_hex::<String>(),
-            "023731bb99ac689f66eef5973e4a94da188f4ddcae580724fc6f3fd60dfd488333"
-        );
-        assert_eq!(
-            digest,
-            [
-                2, 55, 49, 187, 153, 172, 104, 159, 102, 238, 245, 151, 62, 74, 148, 218, 24, 143,
-                77, 220, 174, 88, 7, 36, 252, 111, 63, 214, 13, 253, 72, 131, 51
-            ]
-        )
     }
 }
