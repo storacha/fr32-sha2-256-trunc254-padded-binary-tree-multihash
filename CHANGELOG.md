@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/compare/v1.1.4...v2.0.0) (2023-10-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* arbitrary payload size support ([#18](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/issues/18))
+
+### Features
+
+* arbitrary payload size support ([#18](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/issues/18)) ([89d14b5](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/commit/89d14b5d6d859bdfac1c50dff5e2a27bb307f197))
+
 ## [1.1.4](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/compare/v1.1.3...v1.1.4) (2023-09-19)
 
 
