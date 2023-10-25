@@ -30,6 +30,8 @@ mod tests {
 
     #[test]
     fn test_padding() {
+        assert_eq!(required_width(128), 8);
+        assert_eq!(required_width(127 * 4 + 1), 8 * 4);
         assert_eq!(required_zero_padding(0), 127);
         assert_eq!(required_zero_padding(1), 126);
         assert_eq!(required_zero_padding(5), 122);
@@ -41,7 +43,6 @@ mod tests {
         assert_eq!(required_zero_padding(127 * 2 + 1), 127 * 2 - 1);
         assert_eq!(required_zero_padding(127 * 3), 127);
         assert_eq!(required_zero_padding(127 * 4), 0);
-        assert_eq!(required_width(127 * 4 + 1), 8 * 4);
         assert_eq!(required_zero_padding(127 * 4 + 10), 127 * 8 - 127 * 4 - 10);
         assert_eq!(required_zero_padding(128 * 4), 504);
     }

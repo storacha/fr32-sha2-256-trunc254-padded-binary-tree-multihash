@@ -289,3 +289,40 @@ fn flush(layers: &mut Layers, build: bool) {
         level += 1; // Increment the level
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::convert::{TryFrom, TryInto};
+
+    pub struct Varint([u8; 10]);
+
+    impl From<u64> for Varint {
+        fn from(value: u64) -> Self {
+            let mut buffer = unsigned_varint::encode::u64_buffer();
+            unsigned_varint::encode::u64(value, &mut buffer);
+            Varint(buffer)
+        }
+    }
+
+    impl TryInto<u64> for Varint {
+        type Error = unsigned_varint::decode::Error;
+        fn try_into(self) -> Result<u64, Self::Error> {
+            let out = unsigned_varint::decode::u64(&self.0);
+            match out {
+                Ok((value, _)) => Ok(value),
+                Err(e) => Err(e),
+            }
+        }
+    }
+
+    #[test]
+    fn test_large_num() {
+        let varint = Varint::from(2u64.pow(63));
+        assert_eq!(
+            varint.0[..],
+            [128, 128, 128, 128, 128, 128, 128, 128, 128, 1]
+        );
+
+        assert_eq!(varint.try_into(), Ok(2u64.pow(63)));
+    }
+}
