@@ -136,6 +136,20 @@ export class PieceHasher {
         const ret = wasm.piecehasher_digestInto(this.__wbg_ptr, ptr0, len0, addHeapObject(target), !isLikeNone(offset), isLikeNone(offset) ? 0 : offset, isLikeNone(use_prefix) ? 0xFFFFFF : use_prefix ? 1 : 0);
         return ret >>> 0;
     }
+    /**
+    * @returns {number}
+    */
+    digestByteLength() {
+        const ret = wasm.piecehasher_digestByteLength(this.__wbg_ptr);
+        return ret >>> 0;
+    }
+    /**
+    * @returns {number}
+    */
+    multihashByteLength() {
+        const ret = wasm.piecehasher_multihashByteLength(this.__wbg_ptr);
+        return ret >>> 0;
+    }
 }
 
 async function __wbg_load(module, imports) {
