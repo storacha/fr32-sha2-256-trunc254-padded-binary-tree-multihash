@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/compare/v2.1.0...v3.0.0) (2023-10-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* digestInto returns number of written bytes ([#22](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/issues/22))
+
+### Features
+
+* digestInto returns number of written bytes ([#22](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/issues/22)) ([6f3aefb](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/commit/6f3aefbe5e26414d5003218f159e4151103faf10))
+
 ## [2.1.0](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/compare/v2.0.0...v2.1.0) (2023-10-26)
 
 
