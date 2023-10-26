@@ -31,19 +31,29 @@ export class PieceHasher {
 * @returns {number}
 */
   digestInto(target: Uint8Array, offset?: number, use_prefix?: boolean): number;
+/**
+* @returns {number}
+*/
+  digestByteLength(): number;
+/**
+* @returns {number}
+*/
+  multihashByteLength(): number;
 }
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
+  readonly __wbg_piecehasher_free: (a: number) => void;
   readonly piecehasher_count: (a: number) => number;
   readonly piecehasher_reset: (a: number) => void;
   readonly piecehasher_write: (a: number, b: number, c: number) => void;
   readonly piecehasher_digestInto: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => number;
+  readonly piecehasher_digestByteLength: (a: number) => number;
+  readonly piecehasher_multihashByteLength: (a: number) => number;
   readonly create: () => number;
   readonly piecehasher_create: () => number;
-  readonly __wbg_piecehasher_free: (a: number) => void;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
 }
 

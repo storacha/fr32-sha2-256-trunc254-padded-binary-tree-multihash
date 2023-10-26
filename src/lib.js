@@ -18,17 +18,38 @@ export const name = /** @type {const} */ (
 export const code = 0x1011
 
 /**
- * The digest for the multihash is 33 bytes. The first byte defines the height
- * of the tree and the remaining 32 bytes are the sha-256 digest of the root
- * node.
- *
- * @type {33}
+ * Multihash code size in varint bytes
  */
-export const size = 33
+export const CODE_LENGTH = 2
 
 /**
- * Multihash prefix encoding the multihash code and digest size.
+ * Max padding size in bytes
  */
-export const prefix = new Uint8Array([145, 32, 33])
+const MAX_PADDING_SIZE = 9
+
+/**
+ * One byte is used to store the tree height.
+ */
+export const HEIGHT_SIZE = 1
+
+/**
+ * Amount of bytes used to store the tree root.
+ */
+export const ROOT_SIZE = 32
+
+/**
+ * Size of the multihash digest in bytes.
+ */
+const MAX_DIGEST_SIZE = MAX_PADDING_SIZE + HEIGHT_SIZE + ROOT_SIZE
+
+/**
+ * Multihash digest length in varint bytes
+ */
+const MAX_DIGEST_LENGTH = 1
+
+/**
+ * Max number of bytes required to fit this multihash
+ */
+export const MAX_SIZE = CODE_LENGTH + MAX_DIGEST_LENGTH + MAX_DIGEST_SIZE
 
 export { create }

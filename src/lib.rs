@@ -5,8 +5,9 @@ mod piece;
 pub mod tree;
 mod util;
 mod zero_comm;
-use hasher::PieceHasher;
+use hasher::{PieceHasher, CODE_SIZE, HEIGHT_SIZE, ROOT_SIZE};
 use multihash_derive::Hasher;
+use util::{required_zero_padding, varint_estimate};
 pub mod multihash;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
@@ -59,6 +60,20 @@ impl PieceHasher {
             byte_offset + bytes.len()
         }
     }
+
+    #[wasm_bindgen(js_name = digestByteLength)]
+    pub fn digest_size(&self) -> usize {
+        let padding = required_zero_padding(self.bytes_written);
+
+        varint_estimate(padding) + HEIGHT_SIZE + ROOT_SIZE
+    }
+
+    #[wasm_bindgen(js_name = multihashByteLength)]
+    pub fn multihash_size(&self) -> usize {
+        let hash_size = self.digest_size();
+
+        CODE_SIZE + varint_estimate(hash_size as u64) + hash_size
+    }
 }
 
 #[wasm_bindgen]
@@ -68,6 +83,8 @@ pub fn create() -> PieceMultihasher {
 
 #[cfg(test)]
 mod tests {
+    use std::hash;
+
     use crate::create;
 
     #[test]
@@ -78,11 +95,12 @@ mod tests {
 
         let mut out = [0u8; 32 + 1 + 9];
         let size = hasher.read(&mut out, None, None);
+        assert_eq!(hasher.multihash_size(), size);
 
         assert_eq!(
             out[..size],
             [
-                145, 32, 33, 62, 2, 55, 49, 187, 153, 172, 104, 159, 102, 238, 245, 151, 62, 74,
+                145, 32, 34, 62, 2, 55, 49, 187, 153, 172, 104, 159, 102, 238, 245, 151, 62, 74,
                 148, 218, 24, 143, 77, 220, 174, 88, 7, 36, 252, 111, 63, 214, 13, 253, 72, 131,
                 51
             ]
@@ -126,6 +144,7 @@ mod tests {
     #[test]
     fn test_127_bytes() {
         let mut hasher = PieceHasher::from(&[0; 127]);
+        assert_eq!(hasher.digest_size(), 34);
         let hash = hasher.multihash();
 
         assert_eq!(hash.code(), 0x1011);
@@ -149,8 +168,10 @@ mod tests {
     #[test]
     fn test_128_bytes() {
         let payload = [0u8; 128];
-        let hash = PieceHasher::from(&payload).multihash();
+        let mut hasher = PieceHasher::from(&payload);
+        let hash = hasher.multihash();
 
+        assert_eq!(hasher.digest_size(), 34);
         assert_eq!(hash.code(), 0x1011);
         assert_eq!(hash.size(), 34);
         assert_eq!(
@@ -172,6 +193,8 @@ mod tests {
     #[test]
     fn test_32() {
         let mut hasher = PieceHasher::from(&Piece::new(30));
+
+        assert_eq!(hasher.digest_size(), 34);
 
         let multihash = hasher.multihash();
 
@@ -264,7 +287,9 @@ mod tests {
         // and the remaining 4 bytes are 0
         payload[127 * 4..].fill(0);
 
-        let hash = PieceHasher::from(&payload).multihash();
+        let mut hasher = PieceHasher::from(&payload);
+        assert_eq!(hasher.digest_size(), 35);
+        let hash = hasher.multihash();
 
         assert_eq!(hash.size(), 35);
         assert_eq!(
@@ -302,7 +327,9 @@ mod tests {
         let mut payload = data.to_vec();
         payload.push(0);
 
-        let hash = PieceHasher::from(&payload[..]).multihash();
+        let mut hasher = PieceHasher::from(&payload[..]);
+        assert_eq!(hasher.digest_size(), 35);
+        let hash = hasher.multihash();
 
         assert_eq!(hash.size(), 35);
         assert_eq!(

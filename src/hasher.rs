@@ -2,7 +2,7 @@ use crate::constant::{IN_BITS_FR, IN_BYTES_PER_QUAD, NODE_SIZE, OUT_BITS_FR, OUT
 use crate::piece::Piece;
 use crate::tree::{compute_node, truncated_hash, MerkleTreeNode};
 use crate::util::{from_height, required_zero_padding};
-use crate::zero_comm;
+use crate::{varint_estimate, zero_comm};
 use cid;
 use core::primitive::u64;
 use multihash::Multihash;
@@ -14,8 +14,13 @@ use wasm_bindgen::prelude::*;
 // Fits for 32PiB of data
 const MAX_HEIGHT: u8 = 50; //u8::MAX;
 
+// Multihash code
+pub const CODE: u64 = 0x1011;
+
 const MAX_PADDING_SIZE: usize = 10; // Max amount of bytes allowed for varint
-const HEIGHT_SIZE: usize = 1; // Height is stored in a single byte
+pub const HEIGHT_SIZE: usize = 1; // Height is stored in a single byte
+pub const ROOT_SIZE: usize = NODE_SIZE; // Size of the merkle tree root
+pub const CODE_SIZE: usize = varint_estimate(CODE); // Size of the multihash code
 
 const RAW: usize = 0x55;
 
@@ -53,9 +58,18 @@ impl PieceHasher {
         }
     }
 
+    /// Returns number of bytes required to store the raw digest.
+    // pub fn digestSize() {
+    //     let paddingLength = required_zero_padding(self.bytes_written);
+    //     unsigned_varint::codec::u64::
+    // }
+
+    /// Returns number of bytes required to store the multihash digest.
+    pub fn multihashSize() {}
+
     pub fn multihash(&mut self) -> Multihash {
         let bytes = self.finalize();
-        Multihash::wrap(0x1011, bytes).unwrap()
+        Multihash::wrap(CODE, bytes).unwrap()
     }
 
     pub fn link(&mut self) -> cid::Cid {
@@ -287,5 +301,42 @@ fn flush(layers: &mut Layers, build: bool) {
 
         layers[level].splice(0..index, []);
         level += 1; // Increment the level
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::convert::{TryFrom, TryInto};
+
+    pub struct Varint([u8; 10]);
+
+    impl From<u64> for Varint {
+        fn from(value: u64) -> Self {
+            let mut buffer = unsigned_varint::encode::u64_buffer();
+            unsigned_varint::encode::u64(value, &mut buffer);
+            Varint(buffer)
+        }
+    }
+
+    impl TryInto<u64> for Varint {
+        type Error = unsigned_varint::decode::Error;
+        fn try_into(self) -> Result<u64, Self::Error> {
+            let out = unsigned_varint::decode::u64(&self.0);
+            match out {
+                Ok((value, _)) => Ok(value),
+                Err(e) => Err(e),
+            }
+        }
+    }
+
+    #[test]
+    fn test_large_num() {
+        let varint = Varint::from(2u64.pow(63));
+        assert_eq!(
+            varint.0[..],
+            [128, 128, 128, 128, 128, 128, 128, 128, 128, 1]
+        );
+
+        assert_eq!(varint.try_into(), Ok(2u64.pow(63)));
     }
 }

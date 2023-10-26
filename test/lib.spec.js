@@ -18,7 +18,7 @@ export const testLib = {
     const bytes = new Uint8Array(65).fill(0)
     hasher.write(bytes)
 
-    const digest = new Uint8Array(37)
+    const digest = new Uint8Array(hasher.multihashByteLength())
     hasher.digestInto(digest, 0, true)
 
     assert.deepEqual(
@@ -66,7 +66,7 @@ export const testLib = {
 
   test0BytePayload: async assert => {
     const hasher = Hasher.create()
-    const output = new Uint8Array(37)
+    const output = new Uint8Array(hasher.multihashByteLength())
 
     const end = hasher.digestInto(output, 0, true)
     const digest = Digest.decode(output.subarray(0, end))
@@ -123,7 +123,7 @@ export const testLib = {
   test127BytePayload: async assert => {
     const hasher = Hasher.create()
     hasher.write(new Uint8Array(127).fill(0))
-    const output = new Uint8Array(64)
+    const output = new Uint8Array(hasher.multihashByteLength())
 
     const end = hasher.digestInto(output, 0, true)
     const digest = Digest.decode(output.subarray(0, end))
@@ -180,7 +180,7 @@ export const testLib = {
   test128BytePayload: async assert => {
     const hasher = Hasher.create()
     hasher.write(new Uint8Array(128).fill(0))
-    const output = new Uint8Array(64)
+    const output = new Uint8Array(hasher.multihashByteLength() + 5)
 
     const end = hasher.digestInto(output, 0, true)
     const digest = Digest.decode(output.subarray(0, end))
@@ -241,10 +241,10 @@ export const testLib = {
     hasher.write(new Uint8Array(127).fill(1))
     hasher.write(new Uint8Array(127).fill(2))
     hasher.write(new Uint8Array(127).fill(3))
-    const output = new Uint8Array(64)
+    const output = new Uint8Array(hasher.multihashByteLength())
 
     const end = hasher.digestInto(output, 0, true)
-    const digest = Digest.decode(output.subarray(0, end))
+    const digest = Digest.decode(output)
 
     assert.deepEqual(digest.code, Hasher.code)
     assert.deepEqual(digest.size, 34)
@@ -302,10 +302,10 @@ export const testLib = {
     hasher.write(new Uint8Array(127).fill(2))
     hasher.write(new Uint8Array(127).fill(3))
     hasher.write(new Uint8Array(128 * 4 - 127 * 4).fill(0))
-    const output = new Uint8Array(64)
+    const output = new Uint8Array(hasher.multihashByteLength())
 
     const end = hasher.digestInto(output, 0, true)
-    const digest = Digest.decode(output.subarray(0, end))
+    const digest = Digest.decode(output)
 
     assert.deepEqual(digest.code, Hasher.code)
     assert.deepEqual(digest.size, 35)
@@ -364,10 +364,10 @@ export const testLib = {
     hasher.write(new Uint8Array(127).fill(3))
     hasher.write(new Uint8Array(128 * 4 - 127 * 4 + 1).fill(0))
 
-    const output = new Uint8Array(64)
+    const output = new Uint8Array(hasher.multihashByteLength())
 
-    const end = hasher.digestInto(output, 0, true)
-    const digest = Digest.decode(output.subarray(0, end))
+    hasher.digestInto(output, 0, true)
+    const digest = Digest.decode(output)
 
     assert.deepEqual(digest.code, Hasher.code)
     assert.deepEqual(digest.size, 35)
