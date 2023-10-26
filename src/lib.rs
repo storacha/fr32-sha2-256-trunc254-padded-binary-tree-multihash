@@ -6,7 +6,6 @@ pub mod tree;
 mod util;
 mod zero_comm;
 use hasher::{PieceHasher, CODE_SIZE, HEIGHT_SIZE, ROOT_SIZE};
-use multihash::Multihash;
 use multihash_derive::Hasher;
 use util::{required_zero_padding, varint_estimate};
 pub mod multihash;
