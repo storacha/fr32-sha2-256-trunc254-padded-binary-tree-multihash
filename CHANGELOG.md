@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/compare/v2.0.0...v2.1.0) (2023-10-26)
+
+
+### Features
+
+* byte length estimate ([#20](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/issues/20)) ([ec93756](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/commit/ec93756d767883a107c0059d139189665d4141e8))
+
 ## [2.0.0](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/compare/v1.1.4...v2.0.0) (2023-10-19)
 
 
