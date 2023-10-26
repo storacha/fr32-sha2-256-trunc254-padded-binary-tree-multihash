@@ -51,7 +51,7 @@ export const digestStream2 = async (source: AsyncIterable<Uint8Array>) => {
   // allocate buffer to hold the multihash
   const digest = new Uint8Array(hasher.multihashByteLength())
   // Write digest and capture end offset
-  const offset = hasher.digestInto(
+  hasher.digestInto(
     // into provided buffer
     digest,
     // at 0 byte offset
