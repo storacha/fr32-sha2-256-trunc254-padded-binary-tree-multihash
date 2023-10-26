@@ -6,6 +6,7 @@ pub mod tree;
 mod util;
 mod zero_comm;
 use hasher::{PieceHasher, CODE_SIZE, HEIGHT_SIZE, ROOT_SIZE};
+use multihash::Multihash;
 use multihash_derive::Hasher;
 use util::{required_zero_padding, varint_estimate};
 pub mod multihash;
@@ -53,11 +54,11 @@ impl PieceHasher {
         if use_prefix.unwrap_or(true) {
             let bytes = hash.to_bytes();
             target[byte_offset..byte_offset + bytes.len()].copy_from_slice(&bytes);
-            byte_offset + bytes.len()
+            bytes.len()
         } else {
             let bytes = hash.digest();
             target[byte_offset..byte_offset + bytes.len()].copy_from_slice(&bytes);
-            byte_offset + bytes.len()
+            bytes.len()
         }
     }
 
