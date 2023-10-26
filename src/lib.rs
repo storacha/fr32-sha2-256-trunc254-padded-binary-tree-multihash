@@ -53,11 +53,11 @@ impl PieceHasher {
         if use_prefix.unwrap_or(true) {
             let bytes = hash.to_bytes();
             target[byte_offset..byte_offset + bytes.len()].copy_from_slice(&bytes);
-            byte_offset + bytes.len()
+            bytes.len()
         } else {
             let bytes = hash.digest();
             target[byte_offset..byte_offset + bytes.len()].copy_from_slice(&bytes);
-            byte_offset + bytes.len()
+            bytes.len()
         }
     }
 
