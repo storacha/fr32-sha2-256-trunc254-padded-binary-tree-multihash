@@ -1,6 +1,7 @@
 import * as Hasher from "../src/lib.js"
+import * as Async from '../src/async.js'
 import * as Link from "multiformats/link"
-import { digest, varint } from "multiformats"
+import { varint } from "multiformats"
 import * as Digest from "multiformats/hashes/digest"
 import * as Raw from "multiformats/codecs/raw"
 
@@ -473,4 +474,20 @@ export const testLib = {
       "bafkzcibd64bqlxticxolgseegik2stpfgkkuwyf6kufex3doorkvmzpjuxwe4dz4"
     )
   },
+
+  async: async assert => {
+    // compute digest using default module
+    const hasher = Hasher.create()
+    const bytes = new Uint8Array(65).fill(0)
+    hasher.write(bytes)
+
+    const digest = new Uint8Array(hasher.multihashByteLength())
+    hasher.digestInto(digest, 0, true)
+
+    // compute digest using async module
+    const asyncDigest = await Async.digest(bytes)
+
+    // they should be the same
+    assert.deepEqual(asyncDigest.bytes, digest)
+  }
 }
