@@ -32,6 +32,10 @@
       "types": "./dist/src/lib.js",
       "import": "./src/lib.js"
     },
+    "./async": {
+      "types": "./dist/src/async.js",
+      "import": "./src/async.js"
+    },
     "./sync": {
       "types": "./dist/src/sync.js",
       "import": "./src/sync.js"
@@ -55,14 +59,14 @@
     ]
   },
   "devDependencies": {
-    "entail": "^2.1.1",
     "c8": "7.13.0",
     "chai": "4.3.7",
+    "entail": "^2.1.1",
     "mocha": "10.2.0",
     "multiformats": "^11.0.2",
+    "nyc": "^15.1.0",
     "playwright-test": "^12.3.0",
-    "typescript": "^5.2.2",
-    "nyc": "^15.1.0"
+    "typescript": "^5.2.2"
   },
   "nyc": {
     "exclude": [
