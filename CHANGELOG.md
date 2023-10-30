@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/compare/v3.0.0...v3.1.0) (2023-10-30)
+
+
+### Features
+
+* expose cjs friendly module and function ([#25](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/issues/25)) ([c76cfb8](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/commit/c76cfb8dfa61a5fc513ab231a4d4ac9bc3abd35b))
+
 ## [3.0.0](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/compare/v2.1.0...v3.0.0) (2023-10-26)
 
 
