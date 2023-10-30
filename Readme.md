@@ -89,5 +89,20 @@ export const concatDigest = async (left: AsyncIterable<Uint8Array>, right: Async
 }
 ```
 
+### Environments that do not support top level await
+
+The main module in this library uses a top-level await to load `wasm`. In environments that
+do not support top-level await (ie, legacy browser environments and many bundlers that build
+for them) you can use the `async` module like this:
+
+```javascript
+import { digest } from "fr32-sha2-256-trunc254-padded-binary-tree-multihash/async"
+
+export const createDigest = async (bytes: Uint8Array) => {
+  return await digest(bytes)
+}
+```
+
+
 
 [FIP0069]:https://github.com/filecoin-project/FIPs/blob/master/FRCs/frc-0069.md
