@@ -5,6 +5,7 @@ use crate::util::{from_height, required_zero_padding};
 use crate::{varint_estimate, zero_comm};
 use cid;
 use core::primitive::u64;
+use js_sys::{Error, Uint8Array};
 use multihash::Multihash;
 use multihash_derive::Hasher;
 use std::convert::{TryFrom, TryInto};
@@ -55,6 +56,44 @@ impl PieceHasher {
             offset: 0,
             layers: vec![Vec::new()],
             digest: [0; MAX_MULTIHASH_SIZE],
+        }
+    }
+
+    pub fn try_update(&mut self, bytes: &[u8]) -> Result<(), Error> {
+        let leaves = &mut self.layers[0];
+        let length = bytes.len();
+        // If we got no bytes there is nothing to do here
+        if length == 0 {
+            return Result::Ok(());
+        } else if self.bytes_written + length as u64 > MAX_PAYLOAD_SIZE as u64 {
+            return Result::Err(Error::new("Payload size exceeded"));
+        }
+        // If we do not have enough bytes to form a quad, just add append new bytes
+        // to the buffer and return.
+        else if self.offset + length < self.buffer.len() {
+            self.buffer[self.offset..self.offset + length].copy_from_slice(bytes);
+            self.offset += length;
+            self.bytes_written += length as u64;
+            return Result::Ok(());
+        } else {
+            let bytes_required = self.buffer.len() - self.offset;
+            self.buffer[self.offset..].copy_from_slice(&bytes[..bytes_required]);
+            read_quad(&self.buffer, leaves);
+            // leaves.append(&mut split(pad(&self.buffer)));
+            let mut read_offset = bytes_required;
+
+            while read_offset + IN_BYTES_PER_QUAD < length {
+                let quad = &bytes[read_offset..read_offset + IN_BYTES_PER_QUAD];
+                read_quad(quad.try_into().unwrap(), leaves);
+                read_offset += IN_BYTES_PER_QUAD;
+            }
+
+            self.buffer[..length - read_offset].copy_from_slice(&bytes[read_offset..]);
+            self.offset = length - read_offset;
+            self.bytes_written += length as u64;
+
+            prune(&mut self.layers);
+            return Result::Ok(());
         }
     }
 
@@ -132,41 +171,7 @@ impl From<&[u8]> for PieceHasher {
 // so that it could be use by multihash codec table.
 impl Hasher for PieceHasher {
     fn update(&mut self, bytes: &[u8]) {
-        let leaves = &mut self.layers[0];
-        let length = bytes.len();
-        // If we got no bytes there is nothing to do here
-        if length == 0 {
-            return;
-        } else if self.bytes_written + length as u64 > MAX_PAYLOAD_SIZE as u64 {
-            panic!("Payload size exceeded")
-        }
-        // If we do not have enough bytes to form a quad, just add append new bytes
-        // to the buffer and return.
-        else if self.offset + length < self.buffer.len() {
-            self.buffer[self.offset..self.offset + length].copy_from_slice(bytes);
-            self.offset += length;
-            self.bytes_written += length as u64;
-            return;
-        } else {
-            let bytes_required = self.buffer.len() - self.offset;
-            self.buffer[self.offset..].copy_from_slice(&bytes[..bytes_required]);
-            read_quad(&self.buffer, leaves);
-            // leaves.append(&mut split(pad(&self.buffer)));
-            let mut read_offset = bytes_required;
-
-            while read_offset + IN_BYTES_PER_QUAD < length {
-                let quad = &bytes[read_offset..read_offset + IN_BYTES_PER_QUAD];
-                read_quad(quad.try_into().unwrap(), leaves);
-                read_offset += IN_BYTES_PER_QUAD;
-            }
-
-            self.buffer[..length - read_offset].copy_from_slice(&bytes[read_offset..]);
-            self.offset = length - read_offset;
-            self.bytes_written += length as u64;
-
-            prune(&mut self.layers);
-            return;
-        }
+        self.try_update(bytes).unwrap();
     }
     fn finalize(&mut self) -> &[u8] {
         let mut layers = self.layers.clone();

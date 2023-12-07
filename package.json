@@ -55,7 +55,8 @@
   },
   "c8": {
     "exclude": [
-      "gen/**"
+      "gen/**",
+      "test/**"
     ]
   },
   "devDependencies": {

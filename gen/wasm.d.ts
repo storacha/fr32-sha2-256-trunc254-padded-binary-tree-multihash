@@ -48,12 +48,13 @@ export interface InitOutput {
   readonly __wbg_piecehasher_free: (a: number) => void;
   readonly piecehasher_count: (a: number) => number;
   readonly piecehasher_reset: (a: number) => void;
-  readonly piecehasher_write: (a: number, b: number, c: number) => void;
+  readonly piecehasher_write: (a: number, b: number, c: number, d: number) => void;
   readonly piecehasher_digestInto: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => number;
   readonly piecehasher_digestByteLength: (a: number) => number;
   readonly piecehasher_multihashByteLength: (a: number) => number;
   readonly create: () => number;
   readonly piecehasher_create: () => number;
+  readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
 }
 

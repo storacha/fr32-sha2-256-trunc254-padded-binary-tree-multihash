@@ -1,3 +1,4 @@
+use js_sys::Error;
 use wasm_bindgen::prelude::*;
 pub mod constant;
 mod hasher;
@@ -10,15 +11,9 @@ use multihash_derive::Hasher;
 use util::{required_zero_padding, varint_estimate};
 pub mod multihash;
 
-// When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
-// allocator.
-#[cfg(feature = "wee_alloc")]
-#[global_allocator]
-static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
-
 type PieceMultihasher = PieceHasher;
 
-#[wasm_bindgen]
+#[wasm_bindgen(inspectable)]
 impl PieceHasher {
     /// Creates a new hasher
     #[wasm_bindgen(constructor)]
@@ -37,8 +32,8 @@ impl PieceHasher {
     }
 
     #[wasm_bindgen]
-    pub fn write(&mut self, bytes: &[u8]) {
-        Hasher::update(self, bytes);
+    pub fn write(&mut self, bytes: &[u8]) -> Result<(), Error> {
+        PieceHasher::try_update(self, bytes)
     }
 
     #[wasm_bindgen(js_name = digestInto)]
