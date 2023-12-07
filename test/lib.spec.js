@@ -1,5 +1,5 @@
 import * as Hasher from "../src/lib.js"
-import * as Async from '../src/async.js'
+import * as Async from "../src/async.js"
 import * as Link from "multiformats/link"
 import { varint } from "multiformats"
 import * as Digest from "multiformats/hashes/digest"
@@ -489,5 +489,35 @@ export const testLib = {
 
     // they should be the same
     assert.deepEqual(asyncDigest.bytes, digest)
+  },
+
+  "skip leak": async assert => {
+    // @see https://github.com/web3-storage/w3up/blob/153da70e06e9146783193e81cd85294eafdc17e8/packages/upload-client/src/sharding.js#L8
+    const SHARD_SIZE = 133_169_152
+
+    let n = 128
+    while (n--) {
+      const bytes = getRandomValues(new Uint8Array(SHARD_SIZE))
+      await Async.digest(bytes)
+    }
+
+    assert.ok(true)
+  },
+}
+
+const CRYPTO_RANDOM_MAX = 65_536
+
+/**
+ *
+ * @param {Uint8Array} buffer
+ * @returns {Uint8Array}
+ */
+const getRandomValues = buffer => {
+  let offset = 0
+  while (offset < buffer.length) {
+    crypto.getRandomValues(buffer.subarray(offset, offset + CRYPTO_RANDOM_MAX))
+    offset += CRYPTO_RANDOM_MAX
   }
+
+  return buffer
 }
