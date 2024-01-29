@@ -6,10 +6,11 @@ export { code, CODE_LENGTH, HEIGHT_SIZE, ROOT_SIZE, MAX_SIZE }
 // load bytecode in Cloudflare Workers as wasm import
 // all other paths are disallowed by embedder
 let bytecode
+// https://developers.cloudflare.com/workers/runtime-apis/web-standards/#navigatoruseragent
+export const CLOUDFLARE_WORKERS_NAVIGATOR = "Cloudflare-Workers"
 /* c8 ignore start */
 try {
-  // @ts-expect-error only in Cloudflare
-  if (HTMLRewriter) {
+  if (globalThis.navigator?.userAgent === CLOUDFLARE_WORKERS_NAVIGATOR) {
     // @ts-expect-error no declaration types
     bytecode = (await import('../gen/wasm_bg.wasm')).default
   }
