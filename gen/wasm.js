@@ -256,13 +256,7 @@ async function __wbg_init(input) {
     if (wasm !== undefined) return wasm;
 
     if (typeof input === 'undefined') {
-        try {
-            input = new URL('wasm_bg.wasm', import.meta.url);
-        } catch {
-            // try with dynamic import - CF workers runtime does not have import.meta.url
-            const module = await import('./wasm_bg.wasm')
-            input = module.default
-        }
+        input = new URL('wasm_bg.wasm', import.meta.url);
     }
     const imports = __wbg_get_imports();
 
