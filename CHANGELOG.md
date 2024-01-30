@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.2](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/compare/v3.1.1...v3.1.2) (2024-01-30)
+
+
+### Bug Fixes
+
+* load bytecode if possible to support Cloudflare Workers as wasm import ([#31](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/issues/31)) ([dc15e37](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/commit/dc15e37587112dcd10455c7791a5384fc8e32151))
+
 ## [3.1.1](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/compare/v3.1.0...v3.1.1) (2023-12-07)
 
 
