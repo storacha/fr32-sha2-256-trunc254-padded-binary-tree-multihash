@@ -37,10 +37,6 @@
       "types": "./dist/src/async.js",
       "import": "./src/async.js"
     },
-    "./sync": {
-      "types": "./dist/src/sync.js",
-      "import": "./src/sync.js"
-    },
     "./wasm-import": {
       "types": "./dist/src/wasm-import.js",
       "import": "./src/wasm-import.js"
@@ -53,8 +49,11 @@
       ".": [
         "dist/src/lib.d.ts"
       ],
-      "sync": [
-        "dist/src/sync.d.ts"
+      "async": [
+        "dist/src/async.d.ts"
+      ],
+      "wasm-import": [
+        "dist/src/wasm-import.d.ts"
       ]
     }
   },
