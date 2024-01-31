@@ -1,6 +1,6 @@
 // A cloudflare worker script running the hasher to be deployed in miniflare
 
-import * as Hasher from '../src/cf.js'
+import * as Hasher from '../src/wasm-import.js'
 
 export default {
   async fetch () {

@@ -41,9 +41,9 @@
       "types": "./dist/src/sync.js",
       "import": "./src/sync.js"
     },
-    "./cf": {
-      "types": "./dist/src/cf.js",
-      "import": "./src/cf.js"
+    "./wasm-import": {
+      "types": "./dist/src/wasm-import.js",
+      "import": "./src/wasm-import.js"
     },
     "./package.json": "./package.json"
   },

@@ -9,10 +9,11 @@ import {
 export * from "./type.js"
 export { code, CODE_LENGTH, HEIGHT_SIZE, ROOT_SIZE, MAX_SIZE }
 
-// load bytecode in Cloudflare Workers as wasm import
+// load bytecode with import
+// there are runtimes like cloudflare workers where
 // all other paths are disallowed by embedder
 // @ts-expect-error
-let bytecode = (await import("../gen/wasm_bg.wasm")).default
+import bytecode from "../gen/wasm_bg.wasm"
 
 await load(bytecode)
 
