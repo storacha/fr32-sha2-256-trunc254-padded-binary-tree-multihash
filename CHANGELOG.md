@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.0](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/compare/v3.1.2...v3.2.0) (2024-01-31)
+
+
+### Features
+
+* export cf compatible module ([#33](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/issues/33)) ([cc73afa](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/commit/cc73afabd5f2a1837af40ed529b2d32e78cf7cc3))
+
 ## [3.1.2](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/compare/v3.1.1...v3.1.2) (2024-01-30)
 
 
