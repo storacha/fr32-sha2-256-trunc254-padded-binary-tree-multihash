@@ -17,6 +17,7 @@
     "prepublishOnly": "tsc --build",
     "test:web": "playwright-test test/**/*.spec.js --runner entail --cov && nyc report",
     "test:node": "c8 --check-coverage --branches 100 --functions 100 --lines 100 entail test/**/*.spec.js",
+    "test:miniflare": "entail test/**/*.miniflare.js",
     "test": "c8 --check-coverage --branches 0 --functions 0 --lines 0 entail test/**/*.spec.js",
     "coverage": "c8 report -r html && open coverage/index.html"
   },
@@ -40,6 +41,10 @@
       "types": "./dist/src/sync.js",
       "import": "./src/sync.js"
     },
+    "./wasm-import": {
+      "types": "./dist/src/wasm-import.js",
+      "import": "./src/wasm-import.js"
+    },
     "./package.json": "./package.json"
   },
   "types": "./dist/src/lib.d.ts",
@@ -60,11 +65,13 @@
     ]
   },
   "devDependencies": {
+    "@types/node": "^20.11.10",
     "c8": "7.13.0",
     "chai": "4.3.7",
     "entail": "^2.1.1",
     "mocha": "10.2.0",
     "multiformats": "^11.0.2",
+    "miniflare": "^3.20231218.4",
     "nyc": "^15.1.0",
     "playwright-test": "^12.3.0",
     "typescript": "^5.2.2"
