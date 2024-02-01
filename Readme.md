@@ -89,6 +89,42 @@ export const concatDigest = async (left: AsyncIterable<Uint8Array>, right: Async
 }
 ```
 
+### Environments that require wasm import
+
+Some environments require loading wasm byte code with import (e.g. Cloudflare workers). All other paths may be disallowed by embedder. You can rely on the `wasm-import` export to load bytecode with the import.
+
+```javascript
+import Hasher from "fr32-sha2-256-trunc254-padded-binary-tree-multihash/wasm-import"
+
+export const digestStream = async (source: AsyncIterable<Uint8Array>) => {
+  const hasher = Hasher.create()
+  for await (const chunk of source) {
+    hasher.write(chunk)
+  }
+
+  // Allocate buffer to hold the multihash
+  // ⚠️ Calling hasher.write may affect bytes required for digest
+  // If you need to pre-allocate see next example
+  const digest = new Uint8Array(hasher.multihashByteLength())
+  // Write digest and capture end offset
+  hasher.digestInto(
+    // into provided buffer
+    digest,
+    // at 0 byte offset
+    0,
+    // and include multihash prefix
+    true
+  )
+
+  // There's no GC (yet) in WASM so you should free up
+  // memory manually once you're done.
+  hasher.free()
+
+
+  return digest
+}
+```
+
 ### Environments that do not support top level await
 
 The main module in this library uses a top-level await to load `wasm`. In environments that
@@ -103,6 +139,15 @@ export const createDigest = async (bytes: Uint8Array) => {
 }
 ```
 
+or even combine the `async` usage with `wasm-import` as follows:
+
+```javascript
+import { digest } from "fr32-sha2-256-trunc254-padded-binary-tree-multihash/async-wasm-import"
+
+export const createDigest = async (bytes: Uint8Array) => {
+  return await digest(bytes)
+}
+```
 
 
 [FIP0069]:https://github.com/filecoin-project/FIPs/blob/master/FRCs/frc-0069.md
