@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.3.0](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/compare/v3.2.1...v3.3.0) (2024-02-01)
+
+
+### Features
+
+* export async wasm import ([#37](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/issues/37)) ([a61c9cf](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/commit/a61c9cf82c0df98520b1c905b26ceff238daa791))
+
 ## [3.2.1](https://github.com/web3-storage/fr32-sha2-256-trunc254-padded-binary-tree-multihash/compare/v3.2.0...v3.2.1) (2024-01-31)
 
 
